@@ -2,7 +2,6 @@
 include 'db.php';
 session_start();
 
-$message = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $fullName = trim($_POST['fullName']);
     $email = trim($_POST['email']);
@@ -12,15 +11,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $confirm = $_POST['confirmPassword'];
 
     if ($password !== $confirm) {
-        $message = '<div class="alert alert-danger">Passwords do not match!</div>';
+        echo '<div style="color:red;">Passwords do not match!</div>';
     } else {
         $hash = password_hash($password, PASSWORD_DEFAULT);
         $stmt = $pdo->prepare("INSERT INTO users (full_name, email, phone, role, password_hash) VALUES (?, ?, ?, ?, ?)");
         try {
             $stmt->execute([$fullName, $email, $phone, $role, $hash]);
-            $message = '<div class="alert alert-success">Registered! <a href="login.php">Login now</a></div>';
+
+            // Auto-login after registration
+            $newUserId = $pdo->lastInsertId();
+            $_SESSION['uid'] = $newUserId;
+            $_SESSION['role'] = $role;
+
+            // Redirect to dashboard
+            header("Location: dashboard.php");
+            exit;
+
         } catch (PDOException $e) {
-            $message = '<div class="alert alert-danger">Email already exists!</div>';
+            echo '<div style="color:red;">Email already exists!</div>';
         }
     }
 }
@@ -253,7 +261,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
 
         <div class="actions">
-          <button type="submit" class="btn-primary">Create account</button>
+          <button type="submit"><a href="dashboard.php"  class="btn-primary">Create account </a></button>
         </div>
 
         <div class="footer-links">

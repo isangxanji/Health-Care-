@@ -1,10 +1,11 @@
 <?php
 session_start();
-include 'db.php';
+include 'db.php'; // your database connection
 
+// Optional: redirect if not logged in
 if (!isset($_SESSION['uid'])) {
-    header("Location: login.php");
-    exit;
+  header("Location: login.php");
+  exit;
 }
 
 $user_id = $_SESSION['uid'];
@@ -12,40 +13,25 @@ $message = '';
 
 // Handle form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $full_name = trim($_POST['full_name']);
-    $doctor = trim($_POST['doctor']);
-    $department = trim($_POST['department']);
-    $date = $_POST['appointment_date'];
-    $time = $_POST['appointment_time'];
-    $reason = trim($_POST['reason']);
-    $status = 'upcoming';
+  $fullName = $_POST['fullName'];
+  $email = $_POST['email'];
+  $phone = $_POST['phone'];
+  $department = $_POST['department'];
+  $doctor = $_POST['doctor'];
+  $date = $_POST['date'];
+  $time = $_POST['time'];
+  $reason = $_POST['reason'];
 
-    $stmt = $pdo->prepare("
-        INSERT INTO appointments 
-        (user_id, full_name, doctor, department, appointment_date, appointment_time, reason, status) 
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-    ");
-    $stmt->execute([$user_id, $full_name, $doctor, $department, $date, $time, $reason, $status]);
+  // Save to database
+  $stmt = $pdo->prepare("INSERT INTO appointments 
+    (user_id, full_name, email, phone, department, doctor, appointment_date, appointment_time, reason, status) 
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'upcoming')");
+  $stmt->execute([$user_id, $fullName, $email, $phone, $department, $doctor, $date, $time, $reason]);
 
-    $message = '<div style="color:green;">Appointment booked!</div>';
+  $message = '<div style="background:#d4edda;color:#155724;padding:1rem;border-radius:4px;margin-bottom:1rem;">
+    Appointment booked successfully!
+  </div>';
 }
-
-// Fetch appointments
-$stmt = $pdo->prepare("
-    SELECT 
-        id,
-        full_name,
-        doctor,
-        department,
-        appointment_date,
-        appointment_time,
-        status
-    FROM appointments
-    WHERE user_id = ?
-    ORDER BY appointment_date ASC
-");
-$stmt->execute([$user_id]);
-$appointments = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
 <!DOCTYPE html>
@@ -54,9 +40,9 @@ $appointments = $stmt->fetchAll(PDO::FETCH_ASSOC);
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>HealthCare+ — Appointments</title>
-<style>
+  <style>
     :root {
-      --bg: linear-gradient(to bottom, #dbeafe, #eef4ff);
+      --bg:  linear-gradient(180deg, #4287e9e5 0%, #ffffffe5 100%);
       --sidebar: #ffffff;
       --accent: #2563eb;
       --accent-hover: #1e40af;
@@ -73,7 +59,7 @@ $appointments = $stmt->fetchAll(PDO::FETCH_ASSOC);
     body {
       margin: 0;
       font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
-      background: var(--bg);
+      background: linear-gradient(180deg, #4287e9e5 0%, #ffffffe5 100%);
       color: var(--text);
       line-height: 1.5;
     }
@@ -97,6 +83,7 @@ $appointments = $stmt->fetchAll(PDO::FETCH_ASSOC);
       display: grid;
       grid-template-columns: 240px 1fr;
       min-height: 100vh;
+      background: linear-gradient(180deg, #4287e9e5 0%, #ffffffe5 100%);
     }
 
     /* Sidebar */
@@ -408,93 +395,98 @@ $appointments = $stmt->fetchAll(PDO::FETCH_ASSOC);
       </nav>
     </aside>
 
-    <!-- Main -->
+    <!-- Main Content -->
     <main class="main">
 
-      <!-- TOPBAR -->
-      <div class="topbar">
-        <div class="topbar-inner">
-          <div class="topbar-title">Appointments</div>
+      <!-- Header Bar -->
+      <div class="header-bar">
+        <div class="header-left">Book Appointment</div>
+        <div class="header-center">
+          <input type="text" placeholder="Search..." />
+        </div>
+        <!-- <div class="header-right">
+          <img src="https://i.imgur.com/8Km9tLL.jpg" alt="Profile" />
+        </div> -->
+        <div class="header-right">
+          <div class="bell">🔔<span class="dot"></span></div>
+          <img src="c:\Users\PRINCESS\Downloads\mingyu.jpg" alt="Profile" class="profile-pic" />
+        </div>
+      </div>
 
-          <div class="topbar-search">
-            🔍
-            <input type="search" placeholder="Search..." />
-          </div>
+      <!-- Appointment Form -->
+      <section class="form-section">
+        <h2>New Appointment</h2>
+        <form>
+          <div class="form-group">
 
-          <div class="topbar-right">
-            <div class="topbar-bell">🔔</div>
-            <div class="topbar-avatar">
-              <img src="img/doctor-removebg.png" alt="User" />
+            <!-- Patient Info -->
+            <div class="form-subgroup">
+              <div class="form-row">
+                <label for="fullName">Full Name</label>
+                <input type="text" id="fullName" value=>
+              </div>
+              <div class="form-row">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" value= >
+              </div>
+              <div class="form-row">
+                <label for="phone">Phone Number</label>
+                <input type="text" id="phone" value=>
+              </div>
+            </div>
+
+            <!-- Appointment Details -->
+            <div class="form-subgroup">
+              <div class="form-row">
+                <label for="department">Department</label>
+                <select id="department">
+                  <option>Select Department</option>
+                  <option>Cardiology</option>
+                  <option>Dermatology</option>
+                  <option>Neurology</option>
+                </select>
+              </div>
+              <div class="form-row">
+                <label for="doctor">Doctor</label>
+                <select id="doctor">
+                  <option>Select Doctor</option>
+                  <option>Dr. Smith</option>
+                  <option>Dr. Lee</option>
+                  <option>Dr. Patel</option>
+                </select>
+              </div>
+              <div class="form-row">
+                <label for="date">Preferred Date</label>
+                <input type="date" id="date" />
+              </div>
+              <div class="form-row">
+                <label for="time">Preferred Time</label>
+                <select id="time">
+                  <option>Select Time</option>
+                  <option>09:00 AM</option>
+                  <option>10:00 PM</option>
+                  <option>11:00 AM</option>
+                  <option>01:00 PM</option>
+                  <option>02:00 PM</option>
+                  <option>03:00 PM</option>
+                  <option>04:00 PM</option>
+                </select>
+              </div>
             </div>
           </div>
-        </div>
-      </div>
 
-      <div class="header">
-        <div>
-          <h1>Appointments</h1>
-          <p>All Appointments – Manage and view all your appointments</p>
-        </div>
-            <a href="bookAppointment.php" class="btn primary">Book New Appointment</a>
-      </div>
+          <div class="form-row">
+            <label for="reason">Reason for Visit</label>
+            <textarea id="reason" placeholder="Please describe your symptoms or reason for the appointment..."></textarea>
+          </div>
 
-      <?php if ($message) echo $message; ?>
-
-      <div class="filters">
-        <input type="search" placeholder="Search by patient name or doctor..." />
-        <select>
-          <option>All Status</option>
-          <option>Upcoming</option>
-          <option>Completed</option>
-          <option>Cancelled</option>
-        </select>
-      </div>
-
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Patient</th>
-              <th>Doctor</th>
-              <th>Department</th>
-              <th>Date & Time</th>
-              <th>Status</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          
-    <tbody>
-        <?php if (empty($appointments)): ?>
-            <tr><td colspan="6" style="text-align:center;">No appointments found.</td></tr>
-        <?php else: ?>
-            <?php foreach ($appointments as $appt): ?>
-                <tr>
-                    <td><?= htmlspecialchars($appt['full_name']); ?></td>
-                    <td><?= htmlspecialchars($appt['doctor']); ?></td>
-                    <td><?= htmlspecialchars($appt['department']); ?></td>
-                    <td><?= htmlspecialchars($appt['appointment_date']) . ' ' . htmlspecialchars($appt['appointment_time']); ?></td>
-                    <td><span class="status <?= htmlspecialchars(strtolower($appt['status'])); ?>"><?= htmlspecialchars($appt['status']); ?></span></td>
-                    <td>
-                        <a href="edit_appointment.php?id=<?= $appt['id']; ?>">Edit</a> |
-                        <a href="cancel_appointment.php?id=<?= $appt['id']; ?>">Cancel</a>
-                    </td>
-                </tr>
-            <?php endforeach; ?>
-        <?php endif; ?>
-    </tbody>
-
-        </table>
-      </div>
-
-      <div class="footer">
-        <div>Showing 0 of 0 appointments</div>
-        <div class="pagination">
-          <button>Previous</button>
-          <button>Next</button>
-        </div>
-      </div>
-
+          <div class="form-actions">
+            <button type="button" class="cancel">Cancel</button>
+            <button type="submit" class="submit">Book Appointment</button>
+          </div>
+        </form>
+      </section>
     </main>
-  </div>
+    </div>
 </body>
 </html>

@@ -1,15 +1,36 @@
 <?php
 session_start();
-include 'db.php';
-
 if (!isset($_SESSION['uid'])) {
     header("Location: login.php");
     exit;
 }
 
+include 'db.php';
+
+// Get user info
 $stmt = $pdo->prepare("SELECT full_name, role FROM users WHERE id = ?");
 $stmt->execute([$_SESSION['uid']]);
 $user = $stmt->fetch();
+
+// Get appointment stats
+$stmt = $pdo->prepare("SELECT 
+    COUNT(*) AS total,
+    SUM(status='upcoming') AS upcoming,
+    SUM(status='completed') AS completed,
+    SUM(status='cancelled') AS cancelled
+FROM appointments WHERE user_id = ?");
+$stmt->execute([$_SESSION['uid']]);
+$stats = $stmt->fetch();
+
+
+
+// Get upcoming appointments
+$stmt = $pdo->prepare("SELECT appointment_date, appointment_time, status 
+                       FROM appointments 
+                       WHERE user_id = ? AND status = 'upcoming' 
+                       ORDER BY appointment_date ASC");
+$stmt->execute([$_SESSION['uid']]);
+$upcomingAppointments = $stmt->fetchAll();
 ?>
 
 <!DOCTYPE html>
@@ -17,17 +38,17 @@ $user = $stmt->fetch();
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>HealthCare+ — Appointment Dashboard</title>
+  <title>HealthCare+ — Appointments</title>
   <style>
     :root {
       --bg: #f7fbff;
-      --sidebar: #0f172a;
-      --sidebar-text: #e2e8f0;
-      --sidebar-muted: #94a3b8;
+      --sidebar: #93c5fd;
+      --sidebar-text: #eeeff1;
+      --sidebar-muted: #e6e9ef;
       --primary: #2563eb;
       --primary-hover: #1e40af;
       --card: #ffffff;
-      --text: #0f172a;
+      --text: #02050b;
       --muted: #64748b;
       --border: #e5e7eb;
       --focus: #93c5fd;
@@ -41,7 +62,7 @@ $user = $stmt->fetch();
     body {
       margin: 0;
       font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
-      background: var(--bg);
+      background: linear-gradient(180deg, #4287e9e5 0%, #ffffffe5 100%);
       color: var(--text);
       line-height: 1.5;
     }
@@ -54,13 +75,18 @@ $user = $stmt->fetch();
 
     /* Sidebar */
     .sidebar {
-      background: linear-gradient(180deg, #0b1224 0%, var(--sidebar) 100%);
+      background: #ffffff;
       color: var(--sidebar-text);
       padding: 1rem;
       display: grid;
       grid-template-rows: auto 1fr auto;
       gap: 1rem;
-      border-right: 1px solid #0b1224;
+      border-right: 1px solid #030711;
+      color: inherit;
+      text-decoration: none;
+      padding: 0.6rem;
+      border-radius: 10px;
+      transition: background 0.15s;
     }
 
     .brand {
@@ -72,61 +98,84 @@ $user = $stmt->fetch();
       margin: 0;
       font-size: 1.25rem;
       letter-spacing: 0.2px;
+      color: #2563EB;
     }
     .brand small {
       color: var(--sidebar-muted);
+      color: #64748b;
     }
 
     .nav {
-      display: grid;
-      gap: 0.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
     }
+
     .nav a {
       display: flex;
       align-items: center;
       gap: 0.6rem;
       padding: 0.65rem 0.75rem;
       border-radius: 10px;
-      color: var(--sidebar-text);
-      text-decoration: none;
+      text-decoration: none ;
       transition: background 0.15s, color 0.15s;
+      color: #1e293b;
     }
-    .nav a span.icon {
-      width: 1.25rem;
-      height: 1.25rem;
-      display: inline-grid;
-      place-items: center;
-      color: var(--sidebar-muted);
-      font-weight: 700;
+    .icon-img {
+      width: 20px;
+      height: 20px;
+      object-fit: contain;
+      display: inline-block;
+      margin-right: 0.6rem;
     }
+
     .nav a.active {
       background: rgba(37, 99, 235, 0.18);
-      color: #fff;
+      color: #1e293b;
     }
     .nav a:hover {
       background: rgba(148, 163, 184, 0.12);
     }
 
     .help-logout {
-      display: grid;
-      gap: 0.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
     }
+
     .help-logout a {
       display: flex;
       align-items: center;
       gap: 0.6rem;
-      padding: 0.6rem 0.75rem;
+      padding: 0.65rem 0.75rem;
       border-radius: 10px;
-      color: var(--sidebar-text);
-      text-decoration: none;
+      text-decoration: none ;
+      transition: background 0.15s, color 0.15s;
+      color: #1e293b;
     }
+
     .help-logout a:hover { background: rgba(148, 163, 184, 0.12); }
 
     /* Main */
+
+    .main-wrapper {
+      background: #ffffff;
+      margin: 1.5rem;
+      padding: 2rem;
+      border-radius: 18px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+    }
     .main {
       padding: 1.5rem;
       display: grid;
-      gap: 1rem;
+      gap: 1.5rem;
+    }
+
+    .dashboard-container {
+      max-width: 1350px;
+      margin: 0 auto;
+      width: 100%;
+      padding: 1rem 2rem;
     }
 
     .topbar {
@@ -179,6 +228,7 @@ $user = $stmt->fetch();
 
     .stats {
       grid-template-columns: repeat(4, minmax(180px, 1fr));
+      gap: 1.25rem; 
     }
 
     .card {
@@ -254,6 +304,7 @@ $user = $stmt->fetch();
       text-decoration: none;
       font-weight: 600;
     }
+
     .link:hover { text-decoration: underline; }
 
     .empty {
@@ -281,37 +332,50 @@ $user = $stmt->fetch();
 <body>
   <div class="layout">
     <!-- Sidebar -->
-    <aside class="sidebar" aria-label="Sidebar navigation">
+      <aside class="sidebar" aria-label="Sidebar navigation">
       <div class="brand">
         <h1>HealthCare+</h1>
         <small>Appointment System</small>
       </div>
 
       <nav class="nav" aria-label="Primary">
-        <a href="#" class="active"><span class="icon">🏠</span>Dashboard</a>
-        <a href="#"><span class="icon">📅</span>Appointments</a>
-        <a href="#"><span class="icon">📊</span>Analytics</a>
-        <a href="#"><span class="icon">👤</span>Profile</a>
-      </nav>
 
-      <div class="help-logout">
-        <a href="#"><span class="icon">❓</span>Help</a>
-        <a href="#" id="logout"><span class="icon">🚪</span>Logout</a>
-      </div>
+        <a href="dashboard.php" class="active">
+          <img src="img/dashboard-76.png" class="icon-img"> Dashboard</a>
+
+        <a href="appointment.php">
+          <img src="img/appointment-4.png" class="icon-img"> Appointment</a>
+
+        <a href="analytics.php">
+          <img src="img/analytics-7.png" class="icon-img"> Analytics</a>
+
+        <a href="profile.php">
+          <img src="img/user-profile.png" class="icon-img"> Profile</a>
+
+        <div class="help-logout">
+          <a href="help.php">
+            <img src="img/help-85.png" class="icon-img"> Help</a>
+            
+          <a href="logout.php" id="logout">
+            <img src="img/logout-24.png" class="icon-img"> Logout</a>
+        </div>
+      </nav>
+      
     </aside>
+
 
     <!-- Main -->
     <main class="main">
       <div class="topbar">
         <div class="title-wrap">
           <h2>Dashboard</h2>
-          <p>Welcome back, Min Gyu! Here's an overview of your appointments and activity</p>
+          <p>Welcome back, <?php echo htmlspecialchars($user['full_name']); ?>! Here's an overview of your appointments and activity</p>
         </div>
         <div class="user-info" aria-label="Current user">
           <div class="avatar" aria-hidden="true">MG</div>
           <div>
-            <div class="name">Min Gyu</div>
-            <small class="muted" style="color: var(--muted);">Patient</small>
+            <div class="name"><?php echo htmlspecialchars($user['full_name']); ?></div>
+            <small class="muted" style="color: var(--muted);"><?php echo htmlspecialchars($user['role']); ?></small>
           </div>
         </div>
       </div>
@@ -322,22 +386,22 @@ $user = $stmt->fetch();
 
         <div class="card stat total" aria-label="Total appointments">
           <div class="label">Total Appointments</div>
-          <div class="value" id="stat-total">00</div>
+          <div class="value" id="stat-total"><?php echo str_pad($stats['total'], 2, '0', STR_PAD_LEFT); ?></div>
         </div>
 
         <div class="card stat upcoming" aria-label="Upcoming appointments">
           <div class="label">Upcoming</div>
-          <div class="value" id="stat-upcoming">0</div>
+          <div class="value" id="stat-upcoming"><?php echo $stats['upcoming']; ?></div>
         </div>
 
         <div class="card stat completed" aria-label="Completed appointments">
           <div class="label">Completed</div>
-          <div class="value" id="stat-completed">00</div>
+          <div class="value" id="stat-completed"><?php echo str_pad($stats['completed'], 2, '0', STR_PAD_LEFT); ?></div>
         </div>
 
         <div class="card stat cancelled" aria-label="Cancelled appointments">
           <div class="label">Cancelled</div>
-          <div class="value" id="stat-cancelled">0</div>
+          <div class="value" id="stat-cancelled"><?php echo $stats['cancelled']; ?></div>
         </div>
       </section>
 
@@ -347,27 +411,38 @@ $user = $stmt->fetch();
           <h3>Quick Actions</h3>
         </div>
         <div class="grid actions">
-          <button class="btn primary" id="action-book">Book New Appointment</button>
-          <button class="btn" id="action-view">View All Appointments</button>
-          <button class="btn" id="action-profile">Update Profile</button>
-        </div>
+          <a href="/appointments/new" class="btn primary">Book New Appointment</a>
+    <a href="/appointments" class="btn">View All Appointments</a>
+    <a href="/profile" class="btn">Update Profile</a>
       </section>
 
       <!-- Upcoming appointments -->
       <section class="card" aria-labelledby="upcoming-title">
-        <div class="section-header">
-          <h3 id="upcoming-title">Upcoming Appointments</h3>
-          <a href="#" class="link" id="view-all">View All</a>
-        </div>
+  <div class="section-header">
+    <h3 id="upcoming-title">Upcoming Appointments</h3>
+    <?php if (!empty($upcomingAppointments)): ?>
+      <a href="appointments.php" class="link" id="view-all">View All</a>
+    <?php endif; ?>
+  </div>
 
-        <div class="empty" id="upcoming-empty">
-          <strong>No upcoming appointments</strong>
-          <span>When you book one, it will appear here.</span>
-          <button class="btn primary" id="book-inline">Book Now</button>
+  <?php if (!empty($upcomingAppointments)): ?>
+    <div id="upcoming-list">
+      <?php foreach ($upcomingAppointments as $appt): ?>
+        <div class="appointment">
+          <strong><?= htmlspecialchars($appt['appointment_date']) ?></strong>
+          at <?= htmlspecialchars($appt['appointment_time']) ?>
+          (<?= ucfirst(htmlspecialchars($appt['status'])) ?>)
         </div>
-
-        <div id="upcoming-list" style="display:none;"></div>
-      </section>
+      <?php endforeach; ?>
+    </div>
+  <?php else: ?>
+    <div class="empty" id="upcoming-empty">
+      <strong>No upcoming appointments</strong>
+      <span>When you book one, it will appear here.</span>
+      <a href="appointments_new.php" class="btn primary" id="book-inline">Book Now</a>
+    </div>
+  <?php endif; ?>
+</section>
     </main>
   </div>
 
