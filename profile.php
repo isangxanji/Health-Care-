@@ -626,21 +626,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         min-width: unset;
       }
     }
-      .sidebar-icon {
-    width: 20px;
-    height: 20px;
-    object-fit: contain;
-    margin-right: 10px;
-    vertical-align: middle;
-    filter: grayscale(100%) brightness(0.6);
-    transition: filter 0.2s ease;
-  }
-
-  nav a:hover .sidebar-icon,
-  nav a.active .sidebar-icon {
-    filter: none;
-  }
-  </style>
+.icon-img {
+      width: 20px;
+      height: 20px;
+      object-fit: contain;
+      display: inline-block;
+      margin-right: 0.6rem;
+    }
+</style>
 </head>
 <body>
   <div class="layout">
@@ -689,7 +682,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
         <div class="header-right">
           <div class="bell">🔔<span class="dot"></span></div>
-          <img src="c:\Users\PRINCESS\Downloads\mingyu.jpg" alt="Profile" class="profile-pic" />
+          <img src="img/user.jpg" alt="Profile" class="profile-pic" />
         </div>
       </div>
 
@@ -697,7 +690,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         <!-- Profile Card -->
         <section class="profile-card">
-          <img src="c:\Users\PRINCESS\Downloads\mingyu.jpg" alt="Kim Min Gyu" />
+          <img src="img/user.jpg" alt="Kim Min Gyu" />
           <h2><?php echo htmlspecialchars($user['full_name'] ?? ''); ?></h2>
           <p><?php echo htmlspecialchars($user['email'] ?? ''); ?></p>
           <button>Change Photo</button>

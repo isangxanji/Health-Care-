@@ -1,4 +1,6 @@
-<html lang="en">
+<!DOCTYPE html>
+</body>
+</html><html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -24,6 +26,8 @@
       line-height: 1.6;
       color: #111827;
       background: linear-gradient(180deg, #b6d5ffe5 0%, #ffffffe5 100%);
+      margin: 0;
+      padding: 0;
     }
     
     /* Layout components */
@@ -51,8 +55,10 @@
     /* Header */
     .header {
       background-color: #ffffff;
-      width: 100%;
+      width: 105%;
       padding: 12px 18px;
+
+      
     }
     
     .header-content {
@@ -134,7 +140,7 @@
       gap: 22px;
       align-items: center;
       text-align: center;
-      width: 100%;
+      width: 400px;
     }
     
     .hero-title {
@@ -142,7 +148,8 @@
       font-weight: 700;
       line-height: 1.1;
       color: #111827;
-      text-align: center;
+      max-width: 380px;
+      
     }
     
     .hero-description {
@@ -151,25 +158,29 @@
       line-height: 1.4;
       color: #4b5563;
       text-align: center;
-      max-width: 90%;
+      max-width: 400px;
+      text-align: center;
+      margin: 0 auto;
     }
     
     .hero-cta {
       background-color: #2563eb;
       color: #ffffff;
-      border: none;
-      border-radius: 8px;
+      border: none ;
+      border-radius: 10px;
       padding: 12px 20px;
-      font-size: 14px;
+      font-size: 18px;
       font-weight: 500;
       text-decoration: none;
       transition: all 0.3s ease;
-      margin-top: 16px;
+      margin-top: 5px;
+
     }
     
     .hero-cta:hover {
       background-color: #1d4ed8;
       transform: translateY(-2px);
+      font-family: inherit;
     }
     
     .hero-image-container {
@@ -187,12 +198,12 @@
     
     .doctor-background {
       position: absolute;
-      top: 40px;
-      left: 0;
-      width: 100%;
-      height: 260px;
+      top: 65px;
+      left: 41px;
+      width: 320px;
+      height: 320px;
       background-color: #6da0e4;
-      border-radius: 180px;
+      border-radius: 100%;
       border: 1px solid #2563eb;
       padding: 8px;
     }
@@ -256,11 +267,6 @@
       align-items: center;
       justify-content: center;
     }
-    
-    .icon-blue { background-color: #dbeafe; }
-    .icon-yellow { background-color: #fef9c3; }
-    .icon-green { background-color: #dcfce7; }
-    .icon-purple { background-color: #f3e8ff; }
     
     .feature-title {
       font-size: 16px;
@@ -384,7 +390,7 @@
     /* Footer */
     .footer {
       background-color: #111827;
-      width: 100%;
+      width: 120%;
       padding: 22px;
       margin-top: 64px;
       text-align: center;
@@ -563,7 +569,7 @@
     <div class="content-wrapper">
       <header class="header">
         <div class="header-content">
-          <img src="logo.png" alt="HealthCare+ Logo" class="logo">
+          <img src="img/logo.png" alt="HealthCare+ Logo" class="logo">
           <div class="header-buttons">
             <a href="login.php" class="btn-login">Login</a>
             <a href="register.php" class="btn-get-started">Get Started</a>
@@ -576,13 +582,14 @@
           <div class="hero-content">
             <div class="hero-text">
               <h1 class="hero-title">Your Health, Our Priority</h1>
-              <p class="hero-description">Book appointments with top healthcare professionals in seconds. Manage your health journey with ease and confidence.</p>
+              <p class="hero-description">Book appointments with top healthcare professionals in seconds. Manage your health journey with ease and confidence.
+              </p>
               <a href="login.php" class="hero-cta">Book Your Appointment Today</a>
             </div>
             <div class="hero-image-container">
               <div class="hero-image-stack">
                 <div class="doctor-background"></div>
-                <img src="woman.png" alt="Professional healthcare doctor ready to help patients" class="doctor-image">
+                <img src="img/doctor.png" alt="Professional healthcare doctor ready to help patients" class="doctor-image">
               </div>
             </div>
           </div>
@@ -594,28 +601,28 @@
             <div class="features-grid">
               <div class="feature-item">
                 <div class="feature-icon icon-blue">
-                  <img src="../assets/images/img_frame.svg" alt="Easy booking icon" width="32" height="32">
+                  <img src="img/easy.png" alt="Easy booking icon" width="32" height="32">
                 </div>
                 <h3 class="feature-title">Easy Booking</h3>
                 <p class="feature-description">Schedule appointments in just a few clicks</p>
               </div>
               <div class="feature-item">
                 <div class="feature-icon icon-green">
-                  <img src="../assets/images/img_frame_green_700.svg" alt="24/7 access icon" width="32" height="32">
+                  <img src="img/24.png" alt="24/7 access icon" width="32" height="32">
                 </div>
                 <h3 class="feature-title">24/7 Access</h3>
                 <p class="feature-description">Book appointments anytime, anywhere</p>
               </div>
               <div class="feature-item">
                 <div class="feature-icon icon-yellow">
-                  <img src="../assets/images/img_frame_orange_700.svg" alt="Expert doctors icon" width="32" height="32">
+                  <img src="img/user.png" alt="Expert doctors icon" width="32" height="32">
                 </div>
                 <h3 class="feature-title">Expert Doctors</h3>
                 <p class="feature-description">Access to qualified healthcare professionals</p>
               </div>
               <div class="feature-item">
                 <div class="feature-icon icon-purple">
-                  <img src="../assets/images/img_frame_deep_purple_a200.svg" alt="Secure and private icon" width="32" height="32">
+                  <img src="img/security.png" alt="Secure and private icon" width="32" height="32">
                 </div>
                 <h3 class="feature-title">Secure & Private</h3>
                 <p class="feature-description">Your health data is safe with us</p>

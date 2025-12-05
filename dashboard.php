@@ -327,6 +327,13 @@ $upcomingAppointments = $stmt->fetchAll();
       .layout { grid-template-columns: 1fr; }
       .sidebar { position: sticky; top: 0; z-index: 20; }
     }
+
+
+.nav a:hover .icon-img,
+.nav a.active .icon-img {
+  filter: none;             /* restore full color on hover/active */
+  transform: scale(1.1);    /* subtle zoom for feedback */
+}
   </style>
 </head>
 <body>
@@ -372,7 +379,7 @@ $upcomingAppointments = $stmt->fetchAll();
           <p>Welcome back, <?php echo htmlspecialchars($user['full_name']); ?>! Here's an overview of your appointments and activity</p>
         </div>
         <div class="user-info" aria-label="Current user">
-          <div class="avatar" aria-hidden="true">MG</div>
+          <div class="avatar" aria-hidden="true">AM</div>
           <div>
             <div class="name"><?php echo htmlspecialchars($user['full_name']); ?></div>
             <small class="muted" style="color: var(--muted);"><?php echo htmlspecialchars($user['role']); ?></small>
@@ -411,9 +418,9 @@ $upcomingAppointments = $stmt->fetchAll();
           <h3>Quick Actions</h3>
         </div>
         <div class="grid actions">
-          <a href="/appointments/new" class="btn primary">Book New Appointment</a>
-    <a href="/appointments" class="btn">View All Appointments</a>
-    <a href="/profile" class="btn">Update Profile</a>
+          <a href="bookAppointment.php" class="btn primary">Book New Appointment</a>
+    <a href="appointment.php" class="btn">View All Appointments</a>
+    <a href="profile.php" class="btn">Update Profile</a>
       </section>
 
       <!-- Upcoming appointments -->

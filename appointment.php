@@ -56,7 +56,7 @@ $appointments = $stmt->fetchAll(PDO::FETCH_ASSOC);
   <title>HealthCare+ — Appointments</title>
 <style>
     :root {
-      --bg: linear-gradient(to bottom, #dbeafe, #eef4ff);
+      --bg: linear-gradient(180deg, #4287e9e5 0%, #ffffffe5 100%);
       --sidebar: #ffffff;
       --accent: #2563eb;
       --accent-hover: #1e40af;
@@ -374,6 +374,15 @@ $appointments = $stmt->fetchAll(PDO::FETCH_ASSOC);
         min-width: unset;
       }
     }
+.icon-img {
+      width: 20px;
+      height: 20px;
+      object-fit: contain;
+      display: inline-block;
+      margin-right: 0.6rem;
+    }
+
+
   </style>
 </head>
 <body>
@@ -386,10 +395,10 @@ $appointments = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
       <nav class="nav" aria-label="Primary">
 
-        <a href="dashboard.php" class="active">
+        <a href="dashboard.php">
           <img src="img/dashboard-76.png" class="icon-img"> Dashboard</a>
 
-        <a href="appointment.php">
+        <a href="appointment.php" class="active">
           <img src="img/appointment-4.png" class="icon-img"> Appointment</a>
 
         <a href="analytics.php">
@@ -424,7 +433,7 @@ $appointments = $stmt->fetchAll(PDO::FETCH_ASSOC);
           <div class="topbar-right">
             <div class="topbar-bell">🔔</div>
             <div class="topbar-avatar">
-              <img src="img/doctor-removebg.png" alt="User" />
+              <img src="img/user.jpg" alt="User" />
             </div>
           </div>
         </div>

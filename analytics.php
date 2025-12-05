@@ -361,17 +361,13 @@ $totalAppointments = (int)$pdo->query("SELECT COUNT(*) FROM appointments")->fetc
 }
 
 /* Icon inside input */
-.search-icon {
-  position: absolute;
-  left: 14px;             /* Moves icon horizontally */
-  top: 50%;               
-  transform: translateY(-50%);
-  font-size: 22px;        /* Size of the icon */
-  color: var(--muted);    /* Light gray icon like in screenshot */
-  pointer-events: none;   /* Prevent icon from blocking clicks */
-}
-
-
+.icon-img {
+      width: 20px;
+      height: 20px;
+      object-fit: contain;
+      display: inline-block;
+      margin-right: 0.6rem;
+    }
 
 
 
@@ -380,7 +376,7 @@ $totalAppointments = (int)$pdo->query("SELECT COUNT(*) FROM appointments")->fetc
 
 
     
-  </style>
+
 </head>
 <body>
   <div class="layout">

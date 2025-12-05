@@ -458,6 +458,21 @@ if (!isset($_SESSION['uid'])) { header("Location: login.php"); exit; }
       .layout { grid-template-columns: 1fr; }
       .sidebar { position: sticky; top: 0; z-index: 20; }
     }
+
+      .sidebar-icon {
+    width: 20px;
+    height: 20px;
+    object-fit: contain;
+    margin-right: 10px;
+    vertical-align: middle;
+    filter: grayscale(100%) brightness(0.6);
+    transition: filter 0.2s ease;
+  }
+
+  nav a:hover .sidebar-icon,
+  nav a.active .sidebar-icon {
+    filter: none;
+  }
   </style>
 </head>
 <body>
@@ -505,7 +520,7 @@ if (!isset($_SESSION['uid'])) { header("Location: login.php"); exit; }
         </div>
         <div class="header-right">
           <div class="bell">🔔<span class="dot"></span></div>
-          <img src="c:\Users\PRINCESS\Downloads\mingyu.jpg" alt="Profile" class="profile-pic" />
+          <img src="img/user.jpg" alt="Profile" class="profile-pic" />
         </div>
       </div>
 
